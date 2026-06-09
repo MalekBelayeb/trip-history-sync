@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dispatch Suivi — {{ company }}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body class="dashboard-body">
+    <!-- ── Navbar ── -->
+    <nav class="navbar">
+      <div class="navbar-brand">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 32 32"
+          fill="none"
+          width="28"
+          height="28"
+        >
+          <rect width="32" height="32" rx="8" fill="#F5A623" />
+          <path
+            d="M4 20 L9 12 H23 L28 20 H4Z"
+            fill="#1E3A5F"
+            stroke="#fff"
+            stroke-width="0.8"
+          />
+          <circle cx="10" cy="21" r="2.5" fill="#fff" />
+          <circle cx="22" cy="21" r="2.5" fill="#fff" />
+        </svg>
+        <span>Dispatch Suivi</span>
+      </div>
+      <div class="navbar-right">
+        <span class="company-badge">{{ company }}</span>
+        <span
+          class="sync-indicator"
+          id="syncIndicator"
+          title="Synchronisation auto toutes les 15s"
+        >
+          <span class="sync-dot"></span> Live
+        </span>
+        <a href="/logout" class="btn-logout">Déconnexion</a>
+      </div>
+    </nav>
+
+    <main class="container">
+      <!-- ── Page header ── -->
+      <div class="page-header">
+        <div>
+          <h2 class="page-title">Historique des courses — {{ company }}</h2>
+          <p class="page-sub">
+            Source : feuille <code>{{ company }}</code> dans
+            <code>data/trips.xlsx</code> · mise à jour automatique toutes les 15
+            s
+          </p>
+        </div>
+      </div>
+
+      <!-- ── Filters ── -->
+      <div class="filters-card">
+        <form
+          method="GET"
+          action="/dashboard"
+          class="filters-form"
+          id="filtersForm"
+        >
+          <div class="filter-group">
+            <label for="start_date">Date début</label>
+            <input
+              type="date"
+              id="start_date"
+              name="start_date"
+              value="{{ start_date }}"
+            />
+          </div>
+          <div class="filter-group">
+            <label for="end_date">Date fin</label>
+            <input
+              type="date"
+              id="end_date"
+              name="end_date"
+              value="{{ end_date }}"
+            />
+          </div>
+          <div class="date-range-error" id="dateError" hidden>
+            ⚠ L'intervalle ne peut pas dépasser 1 mois.
+          </div>
+          <div class="filter-actions">
+            <button type="submit" class="btn-primary">Filtrer</button>
+            <a href="/dashboard" class="btn-secondary">Réinitialiser</a>
+            {% if account_type == "COMPANY" %}
+            <a
+              id="btnFacture"
+              href="/facture"
+              class="btn-facture"
+              target="_blank"
+              >🧾 Facture</a
+            >
+            <a id="btnExport" href="/export" class="btn-export"
+              >⬇ Export Excel</a
+            >
+            {% endif %}
+          </div>
+        </form>
+      </div>
+
+      <!-- ── KPIs ── -->
+      <div class="kpi-row">
+        <div class="kpi-card kpi-blue">
+          <div class="kpi-icon">🚖</div>
+          <div class="kpi-value" id="kpiCourses">{{ total_trips }}</div>
+          <div class="kpi-label">Courses</div>
+        </div>
+        {% if account_type == "COMPANY" %}
+        <div class="kpi-card kpi-purple">
+          <div class="kpi-icon">👥</div>
+          <div class="kpi-value" id="kpiPax">{{ total_passengers }}</div>
+          <div class="kpi-label">Passagers transportés</div>
+        </div>
+        <div class="kpi-card kpi-green">
+          <div class="kpi-icon">📅</div>
+          <div class="kpi-value" id="kpiDays">{{ daily_trips | length }}</div>
+          <div class="kpi-label">Jours actifs</div>
+        </div>
+        {% endif %}
+        <div class="kpi-card kpi-orange">
+          <div class="kpi-icon">💰</div>
+          <div class="kpi-value" id="kpiTotal">
+            {{ "%.3f"|format(total_price) }} TND
+          </div>
+          <div class="kpi-label">Total cumulé</div>
+        </div>
+      </div>
+
+      <!-- ── Daily sections ── -->
+      <div id="dailyContainer">
+        {% if daily_trips %} {% for day in daily_trips %}
+        <div class="day-block collapsed">
+          <!-- Day header -->
+          <div
+            class="day-header"
+            onclick="toggleDay(this)"
+            role="button"
+            title="Afficher / masquer la journée"
+          >
+            <div class="day-header-left">
+              <span class="day-date">{{ day.date }}</span>
+              <span class="day-meta">
+                {{ day.trips | length }} course{{ 's' if (day.trips | length) >
+                1 else '' }} &middot; {# {{ day.pax_count }} passager{{ 's' if
+                day.pax_count > 1 }} #}
+              </span>
+            </div>
+            <div class="day-header-right">
+              <div class="price-pill price-pill--day">
+                <span class="pill-label">Journée</span>
+                <span class="pill-val"
+                  >{{ "%.3f"|format(day.total_price) }} TND</span
+                >
+              </div>
+              <div class="price-pill price-pill--cumul">
+                <span class="pill-label">Cumulé</span>
+                <span class="pill-val">{{ "%.3f"|format(0) }} TND</span>
+              </div>
+              <svg
+                class="day-chevron"
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Collapsible day body -->
+          <div class="day-body">
+            <!-- Courses of this day -->
+            {% for trip in day.trips %}
+            <div class="course-block collapsed">
+              <div
+                class="course-header"
+                onclick="toggleCourse(this)"
+                role="button"
+                title="Afficher / masquer les détails"
+              >
+                <div class="course-meta-left">
+                  <span class="course-time">🕐 {{ trip.start_time }}</span>
+                  <span class="course-taxi">🚖 {{ trip.taxi }}</span>
+                  <span class="course-pickup"
+                    >📍 Départ : <strong>{{ trip.society }}</strong></span
+                  >
+                  <span class="course-pax-count"
+                    >{{ trip.trip_passengers | length }} passager{{ 's' if
+                    trip.trip_passengers | length > 1 }}</span
+                  >
+                </div>
+                <div class="course-header-right">
+                  <div class="course-total-pill">
+                    {{ "%.3f"|format(trip.price) }} TND
+                  </div>
+                  <svg
+                    class="course-chevron"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </div>
+              </div>
+
+              <div class="course-body">
+                <table class="pax-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Passager</th>
+                      <th>Adresse arrivée</th>
+                      <!-- <th>Prix (TND)</th> -->
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for tripPassenger in trip.trip_passengers %}
+                    <tr>
+                      <td class="td-num">{{ loop.index }}</td>
+                      <td class="td-passenger">
+                        {{ tripPassenger.passenger }}
+                      </td>
+                      <td class="td-dropoff">{{ tripPassenger.dropoff }}</td>
+                      <td class="td-prix">{{ "%.3f"|format(0) }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                  <tfoot>
+                    <tr class="tfoot-course">
+                      <td colspan="3" class="td-total-label">
+                        Sous-total course
+                      </td>
+                      <td class="td-total-val">
+                        {{ "%.3f"|format(trip.price) }}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <!-- /.course-body -->
+            </div>
+            {% endfor %}
+
+            <!-- Day footer total -->
+            <div class="day-footer">
+              <span>Total journée {{ day.date }}</span>
+              <span class="day-footer-total"
+                >{{ "%.3f"|format(day.total_price) }} TND</span
+              >
+            </div>
+          </div>
+          <!-- /.day-body -->
+        </div>
+        {% endfor %}
+
+        <!-- Grand total bar -->
+        <div class="grand-total-bar">
+          <span>Total général sur la période</span>
+          <span class="grand-total-amount"
+            >{{ "%.3f"|format(total_price) }} TND</span
+          >
+        </div>
+
+        {% else %}
+        <div class="empty-state">
+          <div class="empty-icon">📭</div>
+          <p>Aucune course complétée trouvée pour cette période.</p>
+          <p class="empty-sub">
+            Vérifiez que des cases <strong>isCompleted</strong> sont cochées
+            dans la feuille <strong>{{ company }}</strong> du fichier Excel, ou
+            élargissez la plage de dates.
+          </p>
+        </div>
+        {% endif %}
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      Dispatch Suivi &mdash; feuille <code>{{ company }}</code> dans
+      <code>data/trips.xlsx</code>
+    </footer>
+
+    <!-- ── Auto-refresh polling (every 15 s) ── -->
+    <script>
+      /*
+      function buildApiUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return '/api/courses?' + params.toString();
+      }
+
+      async function checkForUpdates() {
+        const indicator = document.getElementById('syncIndicator');
+        try {
+          const resp = await fetch(buildApiUrl());
+          if (!resp.ok) return;
+          const data = await resp.json();
+
+          if (data.pax_total !== currentPaxTotal) {
+            // New completed rows detected — reload the page to reflect changes
+            currentPaxTotal = data.pax_total;
+            location.reload();
+          } else {
+            // Flash indicator green briefly
+            indicator.classList.add('synced');
+            setTimeout(() => indicator.classList.remove('synced'), 1000);
+          }
+        } catch (e) {
+          // Network error — indicator turns orange briefly
+          indicator.classList.add('error');
+          setTimeout(() => indicator.classList.remove('error'), 2000);
+        }
+      }*/
+
+      //setInterval(checkForUpdates, 15000);
+
+      function toggleDay(header) {
+        const block = header.closest(".day-block");
+        block.classList.toggle("collapsed");
+      }
+
+      function toggleCourse(header) {
+        const block = header.closest(".course-block");
+        block.classList.toggle("collapsed");
+      }
+
+      // Keep Facture and Export links in sync with current date filters
+      function syncActionLinks() {
+        const params = new URLSearchParams(window.location.search);
+        const qs = params.toString() ? "?" + params.toString() : "";
+        document.getElementById("btnFacture").href = "/facture" + qs;
+        document.getElementById("btnExport").href = "/export" + qs;
+      }
+      syncActionLinks();
+      // ── Date range validation (max 1 month) ──────────────────────────────────
+      const inputStartDate = document.getElementById("start_date");
+      const inputEndDate = document.getElementById("end_date");
+      const dateError = document.getElementById("dateError");
+
+      function maxDateForDebut(debutVal) {
+        if (!debutVal) return "";
+        const d = new Date(debutVal);
+        d.setMonth(d.getMonth() + 1);
+        return d.toISOString().slice(0, 10);
+      }
+
+      function validateDateRange() {
+        const debut = inputStartDate.value;
+        const fin = inputEndDate.value;
+        if (debut && fin) {
+          const limit = new Date(debut);
+          limit.setMonth(limit.getMonth() + 1);
+          if (new Date(fin) > limit) {
+            dateError.hidden = false;
+            return false;
+          }
+        }
+        dateError.hidden = true;
+        return true;
+      }
+
+      inputStartDate.addEventListener("change", function () {
+        const max = maxDateForDebut(this.value);
+        inputEndDate.max = max;
+        // If current fin exceeds new max, clamp it
+        if (max && inputEndDate.value > max) inputEndDate.value = max;
+        validateDateRange();
+      });
+
+      inputEndDate.addEventListener("change", validateDateRange);
+
+      // Initialise max on page load if debut is pre-filled
+      if (inputStartDate.value)
+        inputEndDate.max = maxDateForDebut(inputStartDate.value);
+
+      document
+        .getElementById("filtersForm")
+        .addEventListener("submit", function (e) {
+          if (!validateDateRange()) {
+            e.preventDefault();
+            return;
+          }
+          const startDate = inputStartDate.value;
+          const endDate = inputEndDate.value;
+          const qs =
+            startDate || endDate
+              ? "?" +
+                new URLSearchParams({
+                  startDate,
+                  endDate,
+                }).toString()
+              : "";
+          document.getElementById("btnFacture").href = "/facture" + qs;
+          document.getElementById("btnExport").href = "/export" + qs;
+        });
+    </script>
+  </body>
+</html>

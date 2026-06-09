@@ -1,0 +1,35 @@
+<svg width="100%" viewBox="0 0 690 225" role="img" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <clipPath id="circ5"><circle cx="95" cy="108" r="64"/></clipPath>
+  <mask id="imagine-text-gaps-4jfa4o" maskUnits="userSpaceOnUse"><rect x="0" y="0" width="690" height="225" fill="white"/><rect x="77.9" y="76.3" width="33.2" height="13.3" fill="black" rx="2"/><rect x="73.2" y="110.3" width="44.3" height="13.3" fill="black" rx="2"/><rect x="194" y="38.1" width="308.2" height="81.5" fill="black" rx="2"/><rect x="198" y="118.4" width="182.1" height="25.7" fill="black" rx="2"/><rect x="197" y="163.7" width="193.1" height="16.4" fill="black" rx="2"/></mask>
+</defs>
+<rect x="0" y="0" width="680" height="215" fill="white"/>
+<circle cx="95" cy="108" r="71" fill="none" stroke="#F5C200" stroke-width="3.5"/>
+<circle cx="95" cy="108" r="64" fill="#0B2A52"/>
+<g clip-path="url(#circ5)">
+  <rect x="25" y="122" width="142" height="28" fill="#081725"/>
+  <line x1="35" y1="136" x2="51" y2="136" stroke="#F5C200" stroke-width="2" stroke-linecap="round"/>
+  <line x1="63" y1="136" x2="79" y2="136" stroke="#F5C200" stroke-width="2" stroke-linecap="round"/>
+  <line x1="91" y1="136" x2="107" y2="136" stroke="#F5C200" stroke-width="2" stroke-linecap="round"/>
+  <line x1="119" y1="136" x2="135" y2="136" stroke="#F5C200" stroke-width="2" stroke-linecap="round"/>
+  <polygon points="48,122 48,109 55,104 67,104 71,87 117,87 122,97 139,104 142,110 142,122" fill="#F5C200"/>
+  <polygon points="72,88 89,88 88,103 70,103" fill="#5BA3D9" opacity="0.82"/>
+  <rect x="90" y="87" width="3" height="17" fill="#F5C200"/>
+  <polygon points="93,88 116,88 121,103 93,103" fill="#5BA3D9" opacity="0.82"/>
+  <rect x="82" y="77" width="26" height="11" rx="3" fill="white"/>
+  <rect x="83" y="78" width="24" height="9" rx="2.5" fill="#F5C200"/>
+  <text x="95" y="85.5" text-anchor="middle" font-family="'Helvetica Neue',Arial,sans-serif" font-weight="900" font-size="7" fill="#0B2A52" letter-spacing="1.5">TAXI</text>
+  <circle cx="70" cy="122" r="10" fill="#08141E"/>
+  <circle cx="70" cy="122" r="7" fill="#F5C200"/>
+  <circle cx="70" cy="122" r="3.5" fill="#08141E"/>
+  <circle cx="121" cy="122" r="10" fill="#08141E"/>
+  <circle cx="121" cy="122" r="7" fill="#F5C200"/>
+  <circle cx="121" cy="122" r="3.5" fill="#08141E"/>
+  <text x="95" y="119.5" text-anchor="middle" font-family="'Helvetica Neue',Arial,sans-serif" font-weight="800" font-size="7" fill="#0B2A52" opacity="0.85">DRIVORA</text>
+</g>
+<polygon points="178,108 153,98 153,118" fill="#F5C200"/>
+<text x="198" y="101" font-family="'Helvetica Neue',Arial,sans-serif" font-weight="900" font-size="55" fill="#0B2A52" letter-spacing="3">DRIVORA</text>
+<text x="202" y="138" font-family="'Helvetica Neue',Arial,sans-serif" font-weight="400" font-size="19" fill="#2471B3" letter-spacing="13">SERVICE</text>
+<rect x="202" y="154" width="245" height="2.8" fill="#F5C200" rx="1.4"/>
+<text x="202" y="176" font-family="'Helvetica Neue',Arial,sans-serif" font-weight="300" font-size="11" fill="#999" letter-spacing="3">Transport B2B · Tunisie</text>
+</svg>
