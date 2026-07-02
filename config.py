@@ -1,5 +1,7 @@
 import os
+from dotenv import load_dotenv
 
+load_dotenv()  # loads .env from current working directory
 
 class Config:
     DEBUG = os.getenv("FLASK_ENV") == "development"

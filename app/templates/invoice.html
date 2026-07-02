@@ -168,9 +168,9 @@
 
   <!-- Top header: logo (left) | date (right) -->
   <div class="top-header">
-    <div class="logo-wrap">
+    <!-- <div class="logo-wrap">
       <img src="{{ url_for('static', filename='logo_drivora.svg') }}" alt="Drivora Service">
-    </div>
+    </div> -->
     <div class="date-line">
       Tunis le :&nbsp;&nbsp;<strong>{{ today }}</strong>
     </div>
@@ -179,15 +179,15 @@
   <!-- Client block -->
   <div class="client-block">
     <div class="client-name">{{ company }}</div>
-    {% if adresse %}<div class="client-addr">{{ adresse }}</div>{% endif %}
+    {% if address %}<div class="client-addr">{{ address }}</div>{% endif %}
     {% if mf %}<div class="client-mf">M.F : {{ mf }}</div>{% endif %}
   </div>
 
   <!-- Invoice meta -->
   <div class="invoice-meta">
     <div class="num">FACTURE N° F &nbsp;&nbsp;/{{ year }}</div>
-    <div>Date début : <strong>{{ date_debut or '—' }}</strong></div>
-    <div>Date fin &nbsp;&nbsp;: <strong>{{ date_fin or '—' }}</strong></div>
+    <div>Date début : <strong>{{ date_from or '—' }}</strong></div>
+    <div>Date fin &nbsp;&nbsp;: <strong>{{ date_to or '—' }}</strong></div>
   </div>
 
   <!-- Invoice table -->
@@ -197,7 +197,6 @@
         <th style="width:18%">#</th>
         <th style="width:42%">Article</th>
         <th style="width:10%">TVA<br>19%</th>
-        <th style="width:10%">P.U.</th>
         <th style="width:8%">Quantité</th>
         <th style="width:12%">Prix<br>(TND)</th>
       </tr>
@@ -206,13 +205,12 @@
       <tr>
         <td class="center bold" style="font-size:9px;">FORFAIT {{ company|upper }}</td>
         <td>
-          <div class="td-forfait-label">FORFAIT ABONNEMENT PLATEFORME {{ company|upper }}</div>
-          <div class="td-forfait-sub">({{ frais_gestion }}% frais de gestion)</div>
+          <div class="td-forfait-label">FRAIS DE SERVICE {{ company|upper }}</div>
+          <div class="td-forfait-sub">({{ profit_margin }}% frais de gestion)</div>
         </td>
         <td class="center">Service</td>
-        <td class="right">{{ "%.3f"|format(pu) }}</td>
-        <td class="center">{{ quantite }}</td>
-        <td class="right bold">{{ "%.3f"|format(forfait) }}</td>
+        <td class="center">{{ total_trips }}</td>
+        <td class="right bold">{{ "%.3f"|format(service_fee) }}</td>
       </tr>
       <tr>
         <td></td>
@@ -221,9 +219,8 @@
           <div class="td-forfait-sub">(non-imposables)</div>
         </td>
         <td class="center"></td>
-        <td class="right"></td>
         <td class="center">1</td>
-        <td class="right bold">{{ "%.3f"|format(debours) }}</td>
+        <td class="right bold">{{ "%.3f"|format(total_price) }}</td>
       </tr>
     </tbody>
   </table>
@@ -232,31 +229,31 @@
   <div class="bottom-row">
     <div class="words-box">
       <div class="words-label">La facture s'arrête pour un montant de :</div>
-      <div class="words-text">{{ montant_lettres }}</div>
+      <div class="words-text">{{ final_price_with_tva_words }}</div>
     </div>
     <div class="totals-wrap">
       <table class="totals-table">
         <tr>
           <td>Sous total</td>
-          <td class="t-val">{{ "%.3f"|format(sous_total) }}</td>
+          <td class="t-val">{{ "%.3f"|format(final_price_without_tva) }}</td>
         </tr>
         <tr>
           <td>TVA Service (19%)</td>
-          <td class="t-val">{{ "%.3f"|format(tva) }}</td>
+          <td class="t-val">{{ "%.3f"|format(service_fee_tva) }}</td>
         </tr>
         <tr>
           <td>Timbre Fiscal</td>
-          <td class="t-val">1,000</td>
+          <td class="t-val">{{ "%.3f"|format(fiscal_stamp) }}</td>
         </tr>
         <tr class="row-ttc">
           <td>Total TTC</td>
-          <td class="t-val">{{ "%.3f"|format(total_ttc) }}</td>
+          <td class="t-val">{{ "%.3f"|format(final_price_with_tva) }}</td>
         </tr>
       </table>
     </div>
   </div>
 
-  <div class="signature">LE SERVICE FINANCIER</div>
+  <!-- <div class="signature">LE SERVICE FINANCIER</div> -->
 
   <div class="inv-footer">
     <!-- Données Drivora Services à compléter -->

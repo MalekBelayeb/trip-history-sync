@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, session, redirect, url_for
-from app.services import GoogleSheetReaderService, TripHistoryService
+from flask import Blueprint, render_template, request, session, redirect, url_for, send_file
+from app.services import GoogleSheetReaderService, TripHistoryService, ExportTripsService, InvoiceCalculationService
 from datetime import datetime, date
 
 trip_bp = Blueprint('trip', __name__)
@@ -62,3 +62,56 @@ def get_dashboard():
                            end_date=end_date_str,
                            account_type=account_type
                            )
+
+
+@trip_bp.route('/invoice', methods=['GET'])
+def get_invoice():
+    if not session:
+        return redirect(url_for("auth.login"))
+    google_sheet_reader_service = GoogleSheetReaderService()
+    trip_history_service = TripHistoryService(google_sheet_reader_service)
+    invoice_calculation_service = InvoiceCalculationService(google_sheet_reader_service, trip_history_service)
+
+    start_date_str, end_date_str, date_from, date_to = validate_filters()
+    company = session.get("name", "")
+
+    today, year, company, address, mf, date_from, date_to, total_trips, total_price, service_fee, service_fee_tva, fiscal_stamp, profit_margin, final_price_with_tva, final_price_with_tva_words, final_price_without_tva = invoice_calculation_service.get_invoice_results(
+        company, date_from, date_to)
+
+    return render_template("invoice.html",
+                           today=today,
+                           year=year,
+                           company=company,
+                           address=address,
+                           mf=mf,
+                           date_from=date_from,
+                           date_to=date_to,
+                           total_trips=total_trips,
+                           total_price=total_price, service_fee=service_fee, service_fee_tva=service_fee_tva,
+                           fiscal_stamp=fiscal_stamp,
+                           profit_margin=profit_margin,
+                           final_price_with_tva=final_price_with_tva,
+                           final_price_with_tva_words=final_price_with_tva_words,
+                           final_price_without_tva=final_price_without_tva
+                           )
+
+
+@trip_bp.route('/export', methods=['GET'])
+def generate_export():
+    if not session:
+        return redirect(url_for("auth.login"))
+    google_sheet_reader_service = GoogleSheetReaderService()
+    trip_history_service = TripHistoryService(google_sheet_reader_service)
+    export_trip_service = ExportTripsService(trip_history_service)
+    start_date_str, end_date_str, date_from, date_to = validate_filters()
+    company = session.get("name", "")
+
+    file_path = export_trip_service.export_trips_to_excel(company, date_from, date_to)
+
+    download_file_name = f"Courses_{company}_{date_from}_{date_to}.xlsx"
+
+    return send_file(
+        file_path,
+        as_attachment=True,
+        download_name=download_file_name
+    )
