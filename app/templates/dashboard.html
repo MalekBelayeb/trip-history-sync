@@ -210,9 +210,10 @@
                   >
                 </div>
                 <div class="course-header-right">
-                  <div class="course-total-pill">
-                    {{ "%.3f"|format(trip.price) }} TND
+                     <div class="course-total-pill">
+                    {{ "%.3f"|format(trip.price or 0) }} TND
                   </div>
+
                   <svg
                     class="course-chevron"
                     xmlns="http://www.w3.org/2000/svg"
@@ -258,7 +259,7 @@
                     <tr class="tfoot-course">
                       <td colspan="3" class="td-total-label">Prix course</td>
                       <td class="td-total-val">
-                        {{ "%.3f"|format(trip.price) }}
+                        {{ "%.3f"|format(trip.price or 0) }}
                       </td>
                     </tr>
                   </tfoot>

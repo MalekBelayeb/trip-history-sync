@@ -12,7 +12,7 @@ class TripHistoryService:
     def get_daily_trips(self, sheet_name: str | None, start_date: date | None,
                         end_date: date | None):
 
-        sheet_records = self.google_sheet_reader_service.get_rows(sheet_name)
+        sheet_records = self.google_sheet_reader_service.get_rows(str(sheet_name))
 
         # remove empty rows and apply filters
         rows = list(
@@ -68,7 +68,7 @@ class TripHistoryService:
             date_key = trip.date.strftime("%d/%m/%Y")
             trips_by_date[date_key]["date"] = trip.date.strftime("%d/%m/%Y")
             trips_by_date[date_key]["trips"].append(trip)
-            trips_by_date[date_key]["total_price"] += trip.price
+            trips_by_date[date_key]["total_price"] += trip.price if trip.price is not None else 0
 
         trips_by_date_list = list(trips_by_date.values())
 
