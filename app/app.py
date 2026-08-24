@@ -1,5 +1,5 @@
 from flask import Flask
-from app.routes import main_bp, trip_bp, auth_bp
+from app.routes import main_bp, trip_bp, auth_bp, synchronizer_bp
 from config import Config
 
 
@@ -12,5 +12,6 @@ def create_app():
     app.register_blueprint(main_bp)
     app.register_blueprint(trip_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(synchronizer_bp)
 
     return app

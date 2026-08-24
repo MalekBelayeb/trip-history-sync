@@ -57,7 +57,8 @@ class TripHistoryService:
 
             first_passenger = passengers[0]
 
-            trip = Trip(society, site=first_passenger.site, start_time=start_time, date=date, taxi=taxi,
+            trip = Trip(id=None, society=society, site=first_passenger.site, start_time=start_time, date=date,
+                        taxi=taxi,
                         price=first_passenger.price, trip_passengers=passengers)
             trips.append(trip)
 

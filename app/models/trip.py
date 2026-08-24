@@ -4,6 +4,8 @@ from app.models import PassengerTrip
 
 @dataclass
 class Trip:
+    id: str | None
+    site: str
     society: str | None
     site: str | None
     start_time: str | None

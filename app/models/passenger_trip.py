@@ -11,7 +11,7 @@ class PassengerTrip:
     society: str | None
     start_time: str | None
     site: str | None
-    site: str | None
+    phone: str | None
     price: float | None
     taxi: str | None
     date: datetime | None
@@ -26,7 +26,7 @@ class PassengerTrip:
                    start_time=row.get("Start Time", ""),
                    society=row.get("Society", ""),
                    site=row.get("Site", ""),
+                   phone=row.get("Phone Number", ""),
                    price=safe_float_parser(row.get("Price", "")),
                    date=safe_date_parser(row.get("Date", "")),
                    taxi=row.get("Taxi", ""))
-
