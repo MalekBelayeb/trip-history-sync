@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 
-from services import GoogleSheetReaderService
-from services.excel_synchronizer_service import ExcelSynchronizerService
+from app.services import GoogleSheetReaderService
+from app.services.excel_synchronizer_service import ExcelSynchronizerService
 
 synchronizer_bp = Blueprint('synchronizer', __name__)
 
