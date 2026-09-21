@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dispatch Suivi — {{ company }}</title>
+    <title>My Trips — {{ company }}</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
@@ -33,6 +33,9 @@
         <span>My Trips</span>
       </div>
       <div class="navbar-right">
+        <a href="tel:+21652310377" class="support-phone" title="Support">
+          Support : 52 310 377
+        </a>
         <span class="company-badge">{{ company }}</span>
         <span
           class="sync-indicator"
@@ -91,7 +94,7 @@
             />
           </div>
           <div class="date-range-error" id="dateError" hidden>
-            ⚠ L'intervalle ne peut pas dépasser 1 mois.
+            ⚠ L'intervalle ne peut pas dépasser 2 mois.
           </div>
           <div class="filter-actions">
             <button type="submit" class="btn-primary">Filtrer</button>
@@ -210,7 +213,7 @@
                   >
                 </div>
                 <div class="course-header-right">
-                     <div class="course-total-pill">
+                  <div class="course-total-pill">
                     {{ "%.3f"|format(trip.price or 0) }} TND
                   </div>
 
@@ -304,8 +307,10 @@
     </main>
 
     <footer class="app-footer">
-      Dispatch Suivi &mdash; feuille <code>{{ company }}</code> dans
+      My Trips &mdash; feuille <code>{{ company }}</code> dans
       <code>data/trips.xlsx</code>
+      <br />
+      Support : <a href="tel:+21652310377">52 310 377</a>
     </footer>
 
     <!-- ── Auto-refresh polling (every 15 s) ── -->
@@ -341,6 +346,8 @@
 
       //setInterval(checkForUpdates, 15000);
 
+      const MAX_FILTER_MONTH_RANGE = 2;
+
       function toggleDay(header) {
         const block = header.closest(".day-block");
         block.classList.toggle("collapsed");
@@ -367,7 +374,7 @@
       function maxDateForDebut(debutVal) {
         if (!debutVal) return "";
         const d = new Date(debutVal);
-        d.setMonth(d.getMonth() + 1);
+        d.setMonth(d.getMonth() + MAX_FILTER_MONTH_RANGE);
         return d.toISOString().slice(0, 10);
       }
 
@@ -376,7 +383,7 @@
         const fin = inputEndDate.value;
         if (debut && fin) {
           const limit = new Date(debut);
-          limit.setMonth(limit.getMonth() + 1);
+          limit.setMonth(limit.getMonth() + MAX_FILTER_MONTH_RANGE);
           if (new Date(fin) > limit) {
             dateError.hidden = false;
             return false;
