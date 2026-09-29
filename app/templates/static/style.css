@@ -92,9 +92,14 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; color: var(--text); }
   padding: 4px 12px; border-radius: 20px; font-size: .82rem; font-weight: 700;
 }
 .support-phone {
-  color: rgba(255,255,255,.85); text-decoration: none; font-size: .85rem; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--orange); color: var(--navy); text-decoration: none;
+  font-size: .92rem; font-weight: 700; white-space: nowrap;
+  padding: 6px 14px; border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.2); transition: background .2s;
 }
-.support-phone:hover { color: var(--orange); }
+.support-phone:hover { background: #ffc04d; }
+.support-links { display: flex; align-items: center; gap: 10px; }
 .btn-logout {
   color: rgba(255,255,255,.8); text-decoration: none; font-size: .85rem;
   border: 1px solid rgba(255,255,255,.35); padding: 5px 12px; border-radius: 8px;
@@ -147,7 +152,7 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; color: var(--text); }
   font-size: .9rem; outline: none; transition: border-color .2s;
 }
 .filter-group input[type="date"]:focus { border-color: var(--navy); }
-.filter-actions { display: flex; gap: 10px; align-items: flex-end; margin-left: auto; }
+.filter-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-left: auto; max-width: 100%; }
 
 /* ── KPIs ────────────────────────────────────────────────────────────────── */
 .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 26px; }
@@ -312,7 +317,19 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; color: var(--text); }
   .day-header      { flex-direction: column; }
   .day-header-right { flex-direction: row; }
   .course-header   { flex-direction: column; align-items: flex-start; }
-  .filters-form    { flex-direction: column; align-items: flex-start; }
-  .navbar          { padding: 0 14px; }
+  .filters-form    { flex-direction: column; align-items: stretch; }
+  .filter-group input[type="date"] { width: 100%; }
+  .filter-actions  { margin-left: 0; width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+  .filter-actions > * { width: 100%; text-align: center; padding-left: 10px; padding-right: 10px; }
+  /* Header: brand + badge/logout on top row, support contacts on a bottom row */
+  .navbar          { padding: 10px 14px; height: auto; min-height: 58px; flex-wrap: wrap; row-gap: 10px; }
+  .navbar-right    { display: contents; }
+  .company-badge   { margin-left: auto; }
+  .sync-indicator, .btn-logout { margin-left: 8px; }
+  .support-links   {
+    order: 10; flex-basis: 100%; justify-content: flex-end; flex-wrap: wrap; gap: 8px;
+    padding-top: 10px; border-top: 1px solid rgba(255,255,255,.15);
+  }
+  .support-phone   { font-size: .82rem; padding: 5px 10px; }
   .navbar-brand span { display: none; }
 }
