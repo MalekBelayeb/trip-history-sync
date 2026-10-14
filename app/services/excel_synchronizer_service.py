@@ -180,7 +180,7 @@ class ExcelSynchronizerService:
                                        "Phone Number": passenger.phone,
                                        "Start Time": new_trip.start_time,
                                        "Society": new_trip.society, "Site": new_trip.site,
-                                       "Price": new_trip.price, "Taxi": new_trip.taxi,
+                                       "Price": "0", "Taxi": new_trip.taxi,
                                        "Date": new_trip.date.strftime("%d/%m/%Y"), },
                                       )
 
